@@ -1,7 +1,7 @@
 import React, { children } from 'react';
 import Header  from './Header';
 import  Footer  from './Footer';
-export const MainLayout = () => {
+export const MainLayout = ({children}) => {
   return (
     <div>
         <Header />
