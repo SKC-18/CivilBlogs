@@ -47,7 +47,6 @@ return (
             
               <a href='/' className='hover:bg-dark-hard hover:text-white px-4 py-2 text-white lg:text-dark-soft'>
                 {page}
-                {console.log("working")}
               </a>
             
           ))}
