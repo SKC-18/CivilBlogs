@@ -1,4 +1,6 @@
+import { uploadPicture } from "../middleware/uploadPictureMiddleware.js";
 import User from "../models/user.js";
+import { fileRemover } from "../utils/fileRemover.js";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -53,18 +55,18 @@ export const loginUser = async (req, res, next) => {
         token: await user.generateJWT(),
       });
     } else {
-      throw new Error("Invalid Email or Password")
+      throw new Error("Invalid Email or Password");
     }
   } catch (error) {
     next(error);
   }
 };
 
-export const userProfile =async (res,req,next)=>{
+export const userProfile = async (res, req, next) => {
   try {
-    let user = await User.findById(req.user._id)
+    let user = await User.findById(req.user._id);
 
-    if(user){
+    if (user) {
       return res.status(201).json({
         _id: user._id,
         avatar: user.avatar,
@@ -73,14 +75,93 @@ export const userProfile =async (res,req,next)=>{
         verified: user.verified,
         admin: user.admin,
       });
-    }else {
-      let error = new Error ("User not Found");
-      error.statusCode =401;
-      next(error)
+    } else {
+      let error = new Error("User not Found");
+      error.statusCode = 401;
+      next(error);
     }
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
-export default { registerUser, loginUser };
+export const updateProfile = async (req, res, next) => {
+  try {
+    let user = await User.findById(req.user._id);
+    if (!user) {
+      throw new Error("User not found !!");
+    }
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password && req.body.password.length < 8) {
+      throw new Error("Password length must be at least 8 characters");
+    } else if (req.body.password) {
+      user.password = req.body.password;
+    }
+    const updatedUserProfile = await user.save();
+    res.json({
+      _id: upadteProfile._id,
+      avatar: upadteProfile.avatar,
+      name: upadteProfile.name,
+      email: upadteProfile.email,
+      verified: upadteProfile.verified,
+      admin: upadteProfile.admin,
+      token: await upadteProfile.generateJWT(),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfilePicture = async (req, res, next) => {
+  try {
+    const upload = uploadPicture.single("profilePicture");
+
+    upload(req, res, async function (err) {
+      if (err) {
+        const error = new Error("An unknown error has occured" + err.message);
+        next(error);
+      } else {
+        // No error
+        if (req.file) {
+          let filename;
+          let updatedUser = await User.findById(req.user._id);
+          filename = updatedUser.avatar;
+          if (filename) {
+            fileRemover(filename);
+          }
+          updatedUser.avatar=req.file.filename
+          await updatedUser.save()
+          res.json({
+            id: updatedUser._id,
+            avatar: updatedUser.avatar,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            verified: updatedUser.verified,
+            admin: updatedUser.admin,
+            token: await updatedUser.generateJWT(),
+          });
+        } else {
+          let filename;
+          let updatedUser = await User.findById(req.user._id);
+          filename = updatedUser.avatar;
+          updatedUser.avatar = "";
+          await updatedUser.save();
+          fileRemover(filename);
+          res.json({
+            id: updatedUser._id,
+            avatar: updatedUser.avatar,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            verified: updatedUser.verified,
+            admin: updatedUser.admin,
+            token: await updatedUser.generateJWT(),
+          });
+        }
+      }
+    });
+  } catch (error) {}
+};
+
+export default { registerUser, loginUser, updateProfile, updateProfilePicture };

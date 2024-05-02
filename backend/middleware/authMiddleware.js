@@ -8,7 +8,7 @@ export const authGuard = async (req, res, next) => {
   ) {
     try {
       const token = req.headers.authorization.split(" ")[1];
-      const{id}= jwt.verify(token, process.env.JWT_SECRET)
+      const { id } = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await User.findById(id).select("-password");
     } catch (error) {
       const err = new Error("Not authorized , Token Failed !!");
@@ -16,9 +16,8 @@ export const authGuard = async (req, res, next) => {
       next(err);
     }
   } else {
-    let error = new Error ("Not Authorized, No Token")
-    error.statusCode=401
-    next(error)
+    let error = new Error("Not Authorized, No Token");
+    error.statusCode = 401;
+    next(error);
   }
-
 };
