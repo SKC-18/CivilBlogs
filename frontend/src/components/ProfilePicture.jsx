@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { HiOutlineCamera } from "react-icons/hi";
 
-import { stables } from "../constants";
+import { stables } from "../constants/stables.js";
 import CropEasy from "./crop/CropEasy";
 import { toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";

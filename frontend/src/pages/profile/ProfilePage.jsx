@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { MainLayout } from "../../components/MainLayout";
 import { getUserProfile, updateProfile } from "../../services/index/users";
 import ProfilePicture from "../../components/ProfilePicture";
-import { userActions } from "../../store/reducers/userReducers";
+import { userActions } from "../../store/reducers/userReducer.js";
 import { toast } from "react-hot-toast";
 import { useMemo } from "react";
 
